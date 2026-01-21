@@ -9,9 +9,9 @@ public class CameraShake : MonoBehaviour
 
     void Awake()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
         }
         else
         {
@@ -31,7 +31,7 @@ public class CameraShake : MonoBehaviour
     {
         float elapsed = 0.1f;
 
-        while (elapsed < magnitude)
+        while (elapsed < duration)
         {
             float x = Random.Range(-1f, 1f) * magnitude;
 

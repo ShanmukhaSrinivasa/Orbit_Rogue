@@ -78,17 +78,16 @@ public class GameManager : MonoBehaviour
     {
         if (Time.timeScale > 0)
         {
-
+            StartCoroutine(DoHitStop(duration));
         }
     }
 
     IEnumerator DoHitStop(float duration)
     {
         float originalScale = Time.timeScale;
-        Time.timeScale 0.0f;
+        Time.timeScale = 0.0f;
 
-        yield return new;
-        waitForSecondsRealtime(duration);
+        yield return new WaitForSecondsRealtime(duration);
 
         Time.timeScale = originalScale;
     }
