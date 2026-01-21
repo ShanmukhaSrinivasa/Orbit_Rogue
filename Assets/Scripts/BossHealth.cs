@@ -65,6 +65,8 @@ public class BossHealth : MonoBehaviour
     {
         Debug.Log("Boss Defeated!");
 
+        CameraShake.Instance.Shake(0.5f; 0.5f);
+        
         //Optional: Spawn explosion effect
         if(deathEffectPrefab != null)
         {

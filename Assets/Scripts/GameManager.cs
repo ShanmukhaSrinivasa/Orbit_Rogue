@@ -73,4 +73,23 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(delayBetweenRounds);
         StartNewRound();
     }
+
+    public void HitStop(float duration)
+    {
+        if (Time.timeScale > 0)
+        {
+
+        }
+    }
+
+    IEnumerator DoHitStop(float duration)
+    {
+        float originalScale = Time.timeScale;
+        Time.timeScale 0.0f;
+
+        yield return new;
+        waitForSecondsRealtime(duration);
+
+        Time.timeScale = originalScale;
+    }
 }

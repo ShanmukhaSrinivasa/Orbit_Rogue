@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour
 {
-    public int maxHealth = 1; // For testing 1 hit = dead
+    public int maxHealth = 10; // For testing 1 hit = dead
 
     private bool isDead = false;
 
@@ -30,6 +30,7 @@ public class PlayerHealth : MonoBehaviour
 
     private void Die()
     {
+
         isDead = true;
         Debug.Log("Game Over");
 
