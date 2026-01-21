@@ -8,12 +8,27 @@ public class BossWeapon : MonoBehaviour
     public float fireRate = 2f;        // Seconds between shots
     public float bulletSpeed = 4f;
 
+    [Header("Bullet Pattern Settings")]
+    public int novaBulletCount = 8;   // Number of bullets in nova pattern
+
+    [Header("Arc/Half-Circle Pattern")]
+    public int arcBulletCount = 5;
+    public float arcAngle = 60f;      // Total angle of the arc
+
     private float nextFireTime;
+    private Transform playerTransform;
 
     void Start()
     {
         // Don't shoot immediately on spawn, give player 1 second time to breathe
         nextFireTime = Time.time + 1f;
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+        if(player != null)
+        {
+            playerTransform = player.transform;
+        }
     }
 
 
@@ -21,32 +36,61 @@ public class BossWeapon : MonoBehaviour
     {
         if (Time.time >= nextFireTime)
         {
-            ShootNova();
+            int chance = Random.Range(0, 2);
+
+            if(chance == 0)
+            {
+                ShootNova();
+            }
+            else
+            {
+                ShootArcShot();
+            }
+
             nextFireTime = Time.time + fireRate;
         }
     }
 
     private void ShootNova()
     {
-        // Math : 360 degrees divided by number of bullets
-        float angleStep = 360 / bulletCount;
-        float startAngle = 0f;
-
-        for (int i = 0; i < bulletCount; i++)
+        float angleStep = 360f / novaBulletCount;
+        for (int i = 0; i < novaBulletCount; i++)
         {
-            // 1. Calculate Rotation for this specific bullet
-            float currentAngle = startAngle + (i * angleStep);
-            Quaternion rotation = Quaternion.Euler(0, 0, currentAngle);
+            SpawnBullet(i * angleStep);
+        }
+    }
 
-            // 2. Spawn it
-            GameObject bullet = Instantiate(bulletPrefab, transform.position, rotation);
+    private void ShootArcShot()
+    {
+        if(playerTransform == null)
+        {
+            return;
+        }
 
-            // 3. Set Speed
-            BossProjectile bp = bullet.GetComponent<BossProjectile>();
-            if (bp != null)
-            {
-                bp.speed = bulletSpeed;
-            }
+        // 1. Find direction to player
+        Vector3 directionToPlayer = playerTransform.position - transform.position;
+        float centreAngle = Mathf.Atan2(directionToPlayer.y, directionToPlayer.x) * Mathf.Rad2Deg - 90f;
+
+        // 2. Spawn Bullets in an arc centered on the player
+        float StartAngle = centreAngle - (arcAngle / 2f);
+        float angleStep = arcAngle / (arcBulletCount - 1);
+
+        for(int i=0; i < arcBulletCount; i++)
+        {
+            float bulletAngle = StartAngle + (i * angleStep);
+            SpawnBullet(bulletAngle);
+        }
+    }
+
+    private void SpawnBullet(float angle)
+    {
+        Quaternion rotation = Quaternion.Euler(0, 0, angle);
+        GameObject bullet = Instantiate(bulletPrefab, transform.position, rotation);
+        BossProjectile bp = bullet.GetComponent<BossProjectile>();
+
+        if (bp != null)
+        {
+            bp.speed = bulletSpeed;
         }
     }
 }

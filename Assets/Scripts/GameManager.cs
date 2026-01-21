@@ -1,9 +1,10 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
+    public static GameManager Instance;
 
     [Header("References")]
     public GameObject bossPrefab;
@@ -18,11 +19,16 @@ public class GameManager : MonoBehaviour
     public int baseBossHealth = 20;     // Round 1 Health
     public int healthPerRound = 10;     // How much HP to add each Round
 
+    [Header("Canvas Panels")]
+    public CanvasGroup gameStartPanel;
+    public CanvasGroup gamePanel;
+    public CanvasGroup gameOverPanel;
+
     private void Awake()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
         }
         else
         {
@@ -32,6 +38,19 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        ShowCG(gameStartPanel);
+        HideCG(gamePanel);
+        HideCG(gameOverPanel);
+        Time.timeScale = 0f;
+    }
+
+    public void StartGame()
+    {
+        HideCG(gameStartPanel);
+        ShowCG(gamePanel);
+        HideCG(gameOverPanel);
+
+        Time.timeScale = 1f;
         StartNewRound();
     }
 
@@ -57,6 +76,9 @@ public class GameManager : MonoBehaviour
         // 2. Tell the player scripts about the new boss
         playerOrbit.SetCenter(newBoss.transform);
         playerGun.SetTarget(newBoss.transform);
+
+        UIManager.Instance.UpdateRound(roundNumber);
+
     }
 
     public void OnBossDied()
@@ -72,6 +94,19 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delayBetweenRounds);
         StartNewRound();
+    }
+
+    public void GameOver()
+    {
+        Debug.Log("Game Over!");
+        Time.timeScale = 0f; // Pause the game
+        ShowCG(gameOverPanel);
+    }
+
+    public void RestartGame()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void HitStop(float duration)
@@ -90,5 +125,19 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(duration);
 
         Time.timeScale = originalScale;
+    }
+
+    public void ShowCG(CanvasGroup cg)
+    {
+        cg.alpha = 1f;
+        cg.interactable = true;
+        cg.blocksRaycasts = true;
+    }
+
+    public void HideCG(CanvasGroup cg)
+    {
+        cg.alpha = 0f;
+        cg.interactable = false;
+        cg.blocksRaycasts = false;
     }
 }

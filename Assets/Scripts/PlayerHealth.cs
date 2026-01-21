@@ -10,31 +10,39 @@ public class PlayerHealth : MonoBehaviour
     [Header("Invincibility Settings")]
     public float iFrameDuration = 1f; // How long you are safe after hit
     public int numberOfFlashes = 5;
-    private bool isVulnerable = false;
+    private bool isInvincible = false;
     private SpriteRenderer spriteRenderer;
 
     void Start()
     {
         currentHealth = maxHealth;
-        spriteRenderer = GetComponent<spriteRenderer>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        UIManager.Instance.UpdateHealth(currentHealth);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (currentHealth <= 0 || isVulnerable)
+        // If dead or invincible, ignore collision
+        if (currentHealth <= 0 || isInvincible)
         {
             return;
         }
 
         // 2. Check Collisions
-        if (collision.Comparetag("EnemyBullet") || collision.CompareTag("Boss"))
+        if (collision.CompareTag("EnemyBullet") || collision.CompareTag("Boss"))
         {
             TakeDamage();
         }
     }
 
-    private void TakeDamage()
+    public void TakeDamage()
     {
+        if (isInvincible || currentHealth <= 0)
+        {
+            return;
+        }
+
         currentHealth--;
 
         // JUICE: Shake screen when hit
@@ -54,6 +62,8 @@ public class PlayerHealth : MonoBehaviour
             // If still alive, give temporary invincibility
             StartCoroutine(InvulnerabilityRoutine());
         }
+
+        UIManager.Instance.UpdateHealth(currentHealth);
     }
 
 
@@ -66,29 +76,27 @@ public class PlayerHealth : MonoBehaviour
         {
             CameraShake.Instance.Shake(0.5f, 0.5f);
         }
-    }
 
-    private void Update()
-    {
-        if (isDead && Input.GetMouseButtonDown(0))
+        if (GameManager.Instance != null)
         {
-            Time.timeScale = 1f;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            GameManager.Instance.GameOver();
         }
+
+        gameObject.SetActive(false);
     }
 
     private IEnumerator InvulnerabilityRoutine()
     {
-        isVulnerable = true;
+        isInvincible = true;
 
         for (int i = 0; i < numberOfFlashes; i++)
         {
             spriteRenderer.color = new Color(1, 1, 1, 0.5f);
             yield return new WaitForSeconds(iFrameDuration / (numberOfFlashes * 2));
-            spriteRenderer.color = Color.White;
-            yield reutrn new WaitForSeconds(iFrameDuration / (numberOfFlashes * 2));
+            spriteRenderer.color = Color.white;
+            yield return new WaitForSeconds(iFrameDuration / (numberOfFlashes * 2));
         }
 
-        isVulnerable = true;
+        isInvincible = false;
     }
 }

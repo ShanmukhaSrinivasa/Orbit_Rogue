@@ -39,6 +39,16 @@ public class BossHealth : MonoBehaviour
         // 1. Reduce Health
         currentHealth -= damageAmount;
 
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.HitStop(0.02f);
+        }
+
+        if (CameraShake.Instance != null)
+        {
+            CameraShake.Instance.Shake(0.05f, 0.1f);
+        }
+
         // 2. Flash Color
         StartCoroutine(FlashRed());
 
@@ -74,10 +84,12 @@ public class BossHealth : MonoBehaviour
         }
 
         // Notify GameManager
-        if(GameManager.instance != null)
+        if(GameManager.Instance != null)
         {
-            GameManager.instance.OnBossDied();
+            GameManager.Instance.OnBossDied();
         }
+
+        UIManager.Instance.AddScore(100);
 
         // Destroy Boss Object
         Destroy(gameObject);
