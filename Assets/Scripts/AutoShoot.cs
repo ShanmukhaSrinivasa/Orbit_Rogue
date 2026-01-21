@@ -8,6 +8,7 @@ public class AutoShoot : MonoBehaviour
 
     [Header("Gun Stats")]
     public float fireRate = 4f; // Shots per second
+    public Transform muzzlePoint; // Drag the Muzzle child object here in Inspector
 
     private float nextFireTime = 0f;
 
@@ -33,7 +34,7 @@ public class AutoShoot : MonoBehaviour
         }
 
         // 1. Spawn the Bullet at Player's Position
-        GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+        GameObject bullet = Instantiate(bulletPrefab, muzzlePoint.position, Quaternion.identity);
 
         // 2. Rotate Bullet to face the Boss
         // Math : Get Direction vector -> Convert to Angle

@@ -70,13 +70,19 @@ public class PlayerOrbit : MonoBehaviour
 
     private void RotatePlayerSprite()
     {
-        // This makes the ship face the direction it is moving
+        // To point at the boss:
+        // the direction from the ship to the center is (center - ship
+        Vector3 directionToBoss = centerPoint.position - transform.position;
 
-        // Calculate the tangent angle (90 degrees offset from the radius)
-        float tangentAngle = currentAngle + (currentDirection > 0 ? -90f : 90f);
+        // Convert that direction vector into an angle in degrees
+        float angleToBoss = Mathf.Atan2(directionToBoss.y, directionToBoss.x) * Mathf.Rad2Deg;
 
-        // Smoothly rotate to that angle (Juice!)
-        Quaternion targetRotation = Quaternion.Euler(0, 0, tangentAngle);
+        float visualOffset = 90f;
+
+        // Calculate target rotation based on the orbital angle and the sprite's orientation
+        Quaternion targetRotation = Quaternion.Euler(0, 0, currentAngle + visualOffset);
+
+        // Lerp provides that ' juice ' by making the turn feel smooth rather than instant
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * switchSmoothness);
     }
 
