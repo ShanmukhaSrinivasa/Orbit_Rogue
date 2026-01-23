@@ -109,6 +109,11 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
     public void HitStop(float duration)
     {
         if (Time.timeScale > 0)
