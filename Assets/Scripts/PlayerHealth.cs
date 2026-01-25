@@ -5,18 +5,21 @@ using UnityEngine.SceneManagement;
 public class PlayerHealth : MonoBehaviour
 {
     public int maxHealth = 10; // For testing 1 hit = dead
-    private int currentHealth;
+    public int currentHealth;
 
     [Header("Invincibility Settings")]
     public float iFrameDuration = 1f; // How long you are safe after hit
     public int numberOfFlashes = 5;
     private bool isInvincible = false;
     private SpriteRenderer spriteRenderer;
+    private Color originalColor;
 
     void Start()
     {
         currentHealth = maxHealth;
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        originalColor = spriteRenderer.color;
 
         UIManager.Instance.UpdateHealth(currentHealth);
     }
@@ -91,12 +94,40 @@ public class PlayerHealth : MonoBehaviour
 
         for (int i = 0; i < numberOfFlashes; i++)
         {
-            spriteRenderer.color = new Color(1, 1, 1, 0.5f);
+            spriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0.1f);
+
             yield return new WaitForSeconds(iFrameDuration / (numberOfFlashes * 2));
-            spriteRenderer.color = Color.white;
+
+            spriteRenderer.color = originalColor;
+
             yield return new WaitForSeconds(iFrameDuration / (numberOfFlashes * 2));
         }
 
+        spriteRenderer.color = originalColor;
+
         isInvincible = false;
+    }
+
+    public void IncreaseMaxHealth(int amount)
+    {
+        maxHealth += amount;
+        currentHealth += amount;
+        UIManager.Instance.UpdateHealth(currentHealth);
+    }
+
+    public void Heal(int amount)
+    {
+        currentHealth += amount;
+        if (currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
+        UIManager.Instance.UpdateHealth(currentHealth);
+    }
+
+    public void HealFull()
+    {
+        currentHealth = maxHealth;
+        UIManager.Instance.UpdateHealth(currentHealth);
     }
 }

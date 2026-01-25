@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Game Flow")]
     public float delayBetweenRounds = 2f;
-    private int roundNumber = 0;
+    public int roundNumber = 0;
 
     [Header("Difficulty Settings")]
     public int baseBossHealth = 20;     // Round 1 Health
@@ -23,6 +23,10 @@ public class GameManager : MonoBehaviour
     public CanvasGroup gameStartPanel;
     public CanvasGroup gamePanel;
     public CanvasGroup gameOverPanel;
+    public CanvasGroup shopPanel;
+
+    [Header("Shop References")]
+    public ShopManager shopManagerScript;
 
     private void Awake()
     {
@@ -41,6 +45,7 @@ public class GameManager : MonoBehaviour
         ShowCG(gameStartPanel);
         HideCG(gamePanel);
         HideCG(gameOverPanel);
+        HideCG(shopPanel);
         Time.timeScale = 0f;
     }
 
@@ -49,6 +54,7 @@ public class GameManager : MonoBehaviour
         HideCG(gameStartPanel);
         ShowCG(gamePanel);
         HideCG(gameOverPanel);
+        HideCG(shopPanel);
 
         Time.timeScale = 1f;
         StartNewRound();
@@ -87,7 +93,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("Round Cleared");
 
         // Wait for a few seconds before starting a new round
-        StartCoroutine(WaitAndNextRound());
+        StartCoroutine(OpenShopRoutine());
     }
 
     IEnumerator WaitAndNextRound()
@@ -130,6 +136,27 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(duration);
 
         Time.timeScale = originalScale;
+    }
+
+    private IEnumerator OpenShopRoutine()
+    {
+        yield return new WaitForSeconds(2f);
+
+        // Open Shop
+        Time.timeScale = 0f;
+        ShowCG(shopPanel);
+
+        if (shopManagerScript != null)
+        {
+            shopManagerScript.GenerateRandomShop();
+        }
+    }
+
+    public void ResumeFromShop()
+    {
+        HideCG(shopPanel);
+        Time.timeScale = 1f;
+        StartNewRound();
     }
 
     public void ShowCG(CanvasGroup cg)

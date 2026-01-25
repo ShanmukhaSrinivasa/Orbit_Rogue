@@ -16,7 +16,6 @@ public class PlayerOrbit : MonoBehaviour
     //Internal Variables
     private float currentAngle = 0f;
     private float currentDirection = 1f; // 1 = clockwise, -1 = Counter-Clockwise
-    private float visualDirection = 1f; // used for smooth turning animation
 
     void Start()
     {
@@ -76,10 +75,10 @@ public class PlayerOrbit : MonoBehaviour
         // Convert that direction vector into an angle in degrees
         float angleToBoss = Mathf.Atan2(directionToBoss.y, directionToBoss.x) * Mathf.Rad2Deg;
 
-        float visualOffset = 90f;
+        float visualOffset = -90f;
 
         // Calculate target rotation based on the orbital angle and the sprite's orientation
-        Quaternion targetRotation = Quaternion.Euler(0, 0, currentAngle + visualOffset);
+        Quaternion targetRotation = Quaternion.Euler(0, 0, angleToBoss + visualOffset);
 
         // Lerp provides that ' juice ' by making the turn feel smooth rather than instant
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * switchSmoothness);

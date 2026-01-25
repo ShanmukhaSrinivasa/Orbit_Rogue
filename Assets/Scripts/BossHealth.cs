@@ -8,6 +8,10 @@ public class BossHealth : MonoBehaviour
     public int maxHealth = 20;
     public int currentHealth;
 
+    [Header("Score Settings")]
+    public int baseScore = 100;             // Score for Round 1
+    public int scoreIncreasePerRound = 50;  // Extra Score Per round
+
     [Header("Visuals")]
     public GameObject deathEffectPrefab;
     public Color flashColor = Color.red;
@@ -16,14 +20,6 @@ public class BossHealth : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Color originalColor;
     
-    /*
-    void Start()
-    {
-        currentHealth = maxHealth;
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        originalColor = spriteRenderer.color;
-    }
-    */
 
     public void InitializeBoss(int hp)
     {
@@ -32,12 +28,20 @@ public class BossHealth : MonoBehaviour
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         originalColor = spriteRenderer.color;
+
+        // Juice: Initialize the UI bar
+        UIManager.Instance.InitBossHealthBar(maxHealth);
     }
 
     public void TakeDamage(int damageAmount)
     {
         // 1. Reduce Health
         currentHealth -= damageAmount;
+
+        int damageDealt = maxHealth - currentHealth;
+
+        // JUICE: Update the UI Bar
+        UIManager.Instance.UpdateBossHealth(damageDealt);
 
         if (GameManager.Instance != null)
         {
@@ -87,9 +91,19 @@ public class BossHealth : MonoBehaviour
         if(GameManager.Instance != null)
         {
             GameManager.Instance.OnBossDied();
+
+            // --- DYNAMIC SCORE CALCULATION ---
+            // Formula: Base + (Round * Bonus)
+            // Example Round 1: 100 + (1 * 50) = 150
+            // Example Round 5: 100 + (5 * 50) = 350
+            int round = GameManager.Instance.roundNumber;
+            int calculateScore = baseScore + (round * scoreIncreasePerRound);
+
+            UIManager.Instance.AddScore(calculateScore);
         }
 
-        UIManager.Instance.AddScore(100);
+        // Hide the bar since boss is dead
+        UIManager.Instance.HideBossHealthBar();
 
         // Destroy Boss Object
         Destroy(gameObject);

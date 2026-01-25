@@ -36,17 +36,37 @@ public class BossWeapon : MonoBehaviour
     {
         if (Time.time >= nextFireTime)
         {
-            int chance = Random.Range(0, 2);
+            int currentRound = GameManager.Instance.roundNumber;
 
-            if(chance == 0)
-            {
-                ShootNova();
-            }
-            else
+            // Round 1-3: Tutorial Phase (Only Arc Attack)
+            if (currentRound <= 3)
             {
                 ShootArcShot();
             }
-
+            // Round 3-5: Intermediate (Nova + Arc)
+            else if (currentRound <= 5)
+            {
+                if (Random.value > 0.5f)
+                {
+                    ShootNova();
+                }
+                else
+                {
+                    ShootArcShot();
+                }
+            }
+            // Round 5+: Hard Mode (All Attacks mixed)
+            else
+            {
+                if (Random.value > 0.5f)
+                {
+                    ShootNova();
+                }
+                else
+                {
+                    ShootArcShot();
+                }
+            }
             nextFireTime = Time.time + fireRate;
         }
     }

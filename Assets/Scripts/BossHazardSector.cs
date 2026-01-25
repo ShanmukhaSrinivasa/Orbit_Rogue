@@ -28,7 +28,16 @@ public class BossHazardSector : MonoBehaviour
         // Spawn visual indicators if you have them
         SpawnVisuals();
 
-        StartCoroutine(HazardCycle());
+        // Only start the hazard cycle if we are past round 4
+        if (GameManager.Instance.roundNumber >= 5)
+        {
+            StartCoroutine(HazardCycle());
+        }
+        else
+        {
+            SetWedgesActive(false);
+        }
+
     }
 
 

@@ -85,7 +85,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 1383146063806059148, guid: 1979aebc774d94e4db8f32c55042af39, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -145,6 +145,9 @@ MonoBehaviour:
   speed: 15
   lifeTime: 3
   damage: 1
+  isCrit: 0
+  lifeStealChance: 0
+  homingStrength: 0
 --- !u!50 &1549915360319311762
 Rigidbody2D:
   serializedVersion: 5
