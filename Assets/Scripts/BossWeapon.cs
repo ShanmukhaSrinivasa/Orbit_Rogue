@@ -58,14 +58,8 @@ public class BossWeapon : MonoBehaviour
             // Round 8+: Hard Mode (All Attacks mixed)
             else
             {
-                if (Random.value > 0.5f)
-                {
-                    ShootNova();
-                }
-                else
-                {
-                    ShootArcShot();
-                }
+                ShootArcShot();
+                ShootNova();
             }
             nextFireTime = Time.time + fireRate;
         }

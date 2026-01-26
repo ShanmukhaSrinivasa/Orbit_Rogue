@@ -17,6 +17,17 @@ public class BossHealth : MonoBehaviour
     public Color flashColor = Color.red;
     public float flashDuration = 0.1f;
 
+    [Header("Minion Settings")]
+    public GameObject minionPrefab;     // A small asteroid
+    public int minionCount = 4;
+    public float orbitDistance = 2.5f;
+
+    [Header("Minion Scaling")]
+    public int baseMinionCount = 4;
+    public int baseMinionHealth = 3;
+
+    private int calculatedMinionHealth;
+
     private SpriteRenderer spriteRenderer;
     private Color originalColor;
     
@@ -31,6 +42,20 @@ public class BossHealth : MonoBehaviour
 
         // Juice: Initialize the UI bar
         UIManager.Instance.InitBossHealthBar(maxHealth);
+
+        // --- NEW SCALING LOGIC ---
+        int round = GameManager.Instance.roundNumber;
+
+        // 1. Calculate how many "Scale Steps" we have passed (e.g., Round 5 = 1 step, Round 10 = 2 steps)
+        int scaleSteps = round / 5;
+
+        // 2. Increase Count: Add 1 minion every 5 rounds
+        minionCount = baseMinionCount + scaleSteps;
+
+        // 3. Increase Health: Add 3 HP every 5 rounds (Keeps them tough)
+        calculatedMinionHealth = baseMinionHealth + (scaleSteps * 3);
+
+        SpawnMinions();
     }
 
     public void TakeDamage(int damageAmount)
@@ -107,6 +132,9 @@ public class BossHealth : MonoBehaviour
         // Hide the bar since boss is dead
         UIManager.Instance.HideBossHealthBar();
 
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.explosionSound);
+
         // Destroy Boss Object
         Destroy(gameObject);
     }
@@ -118,6 +146,35 @@ public class BossHealth : MonoBehaviour
         foreach (BossProjectile bullet in activeBullets)
         {
             Destroy(bullet.gameObject);
+        }
+    }
+
+    private void SpawnMinions()
+    {
+        if (minionPrefab == null)
+        {
+            return;
+        }
+
+        float angleStep = 360f / minionCount;
+
+        for (int i = 0; i < minionCount; i++)
+        {
+            float angle = i * angleStep;
+
+            float radian = angle * Mathf.Deg2Rad;
+            Vector3 spawnPos = transform.position + new Vector3(Mathf.Cos(radian), Mathf.Sin(radian), 0) * orbitDistance;
+
+            GameObject minion = Instantiate(minionPrefab, spawnPos, Quaternion.identity);
+
+            minion.transform.SetParent(this.transform);
+
+            // --- APPLY NEW HEALTH ---
+            BossMinion minionScript = minion.GetComponent<BossMinion>();
+            if (minionScript != null)
+            {
+                minionScript.health = calculatedMinionHealth;
+            }
         }
     }
 }

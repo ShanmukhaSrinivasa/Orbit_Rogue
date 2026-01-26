@@ -41,6 +41,9 @@ public class AutoShoot : MonoBehaviour
             return;
         }
 
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.shootSound);
+
         // 2. Rotate Bullet to face the Boss
         // Math : Get Direction vector -> Convert to Angle
         Vector3 direction = target.position - transform.position;

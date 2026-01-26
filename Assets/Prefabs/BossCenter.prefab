@@ -161,6 +161,9 @@ MonoBehaviour:
   deathEffectPrefab: {fileID: 660460218390438580, guid: 021da1413f612e24db11ac09140e582e, type: 3}
   flashColor: {r: 1, g: 0, b: 0, a: 1}
   flashDuration: 0.1
+  minionPrefab: {fileID: 4272366108089920924, guid: 426442f2edb6b0e4590df6e1963a0d44, type: 3}
+  minionCount: 3
+  orbitDistance: 2.5
 --- !u!114 &3171130628157466737
 MonoBehaviour:
   m_ObjectHideFlags: 0

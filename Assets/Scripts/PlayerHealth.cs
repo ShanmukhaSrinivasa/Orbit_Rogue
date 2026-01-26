@@ -41,12 +41,17 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage()
     {
+        TakeDamage(1);
+    }
+
+    public void TakeDamage(int damageAmount)
+    {
         if (isInvincible || currentHealth <= 0)
         {
             return;
         }
 
-        currentHealth--;
+        currentHealth -= damageAmount;
 
         // JUICE: Shake screen when hit
         if (CameraShake.Instance != null)
@@ -67,6 +72,8 @@ public class PlayerHealth : MonoBehaviour
         }
 
         UIManager.Instance.UpdateHealth(currentHealth);
+
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.takeDamage);
     }
 
 

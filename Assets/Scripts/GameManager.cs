@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
     public CanvasGroup gamePanel;
     public CanvasGroup gameOverPanel;
     public CanvasGroup shopPanel;
+    public CanvasGroup settingsMenu;
 
     [Header("Shop References")]
     public ShopManager shopManagerScript;
@@ -51,6 +52,7 @@ public class GameManager : MonoBehaviour
         HideCG(gamePanel);
         HideCG(gameOverPanel);
         HideCG(shopPanel);
+        HideCG(settingsMenu);
         Time.timeScale = 0f;
     }
 
@@ -60,6 +62,7 @@ public class GameManager : MonoBehaviour
         ShowCG(gamePanel);
         HideCG(gameOverPanel);
         HideCG(shopPanel);
+        HideCG(settingsMenu);
 
         Time.timeScale = 1f;
         StartNewRound();
@@ -74,7 +77,8 @@ public class GameManager : MonoBehaviour
         GameObject newBoss = Instantiate(bossPrefab, Vector3.zero, Quaternion.identity);
 
         // Math: Round 1 = 20, Round 2 = 30, Round 3 = 40 ...
-        int calculatedHealth = baseBossHealth + ((roundNumber - 1) * healthPerRound);
+        float multiplier = Mathf.Pow(1.3f, roundNumber - 1);
+        int calculatedHealth = Mathf.RoundToInt(baseBossHealth * multiplier); ;
 
         // Get the script and initialize health
         BossHealth bossHealthScript = newBoss.GetComponent<BossHealth>();
@@ -117,7 +121,7 @@ public class GameManager : MonoBehaviour
         if (roundNumber > bestRound)
         {
             bestRound = roundNumber;
-            PlayerPrefs.SetInt("Bestound", bestRound);
+            PlayerPrefs.SetInt("BestRound", bestRound);
             PlayerPrefs.Save();
         }
 
@@ -128,7 +132,7 @@ public class GameManager : MonoBehaviour
 
         if (highScoreText != null)
         {
-            highScoreText.text = "Best Record: \n" + bestRound + "</color>";
+            highScoreText.text = "Best Record: \n<color=yellow>" + bestRound + "</color>";
         }
 
         ShowCG(gameOverPanel);
@@ -140,6 +144,18 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void SettingsButton()
+    {
+        HideCG(gameStartPanel);
+        ShowCG(settingsMenu);
+    }
+
+    public void CloseSettings()
+    {
+        HideCG(settingsMenu);
+        ShowCG(gameStartPanel);
     }
 
     public void QuitGame()

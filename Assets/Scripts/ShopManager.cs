@@ -49,6 +49,11 @@ public class ShopManager : MonoBehaviour
     [Header("Stats UI")]
     public PlayerStatsUI statsUI;
 
+    [Header("Reroll Settings")]
+    public int baseRerollCost = 90;
+    public TextMeshProUGUI rerollButtonText; // Drag the text inside the button here
+    public Button rerollButton;
+
     // Internal list to track what is currently in the 3 slots
     private List<UpgradeOption> currentShopSelection = new List<UpgradeOption>();
 
@@ -62,6 +67,18 @@ public class ShopManager : MonoBehaviour
         if (statsUI != null)
         {
             statsUI.UpdateStats();
+        }
+
+        if (rerollButtonText != null)
+        {
+            int cost = GetRerollCost();
+            rerollButtonText.text = "Reroll<size=80%>(" + cost + ")</size>";
+
+            // Optional: Make button gray if you are broke
+            if (rerollButton != null)
+            {
+                rerollButton.interactable = (UIManager.Instance.GetCredits() >= cost);
+            }
         }
     }
 
@@ -154,7 +171,7 @@ public class ShopManager : MonoBehaviour
             ApplyUpgradeEffect(upgrade);
 
             // increase Cost (Influence)
-            upgrade.cost += upgrade.costIncreasePerBuy;
+            upgrade.cost = Mathf.RoundToInt(upgrade.cost * 1.5f);
 
             // Update UI
             RefreshShopUI();
@@ -162,6 +179,9 @@ public class ShopManager : MonoBehaviour
             // Disable the button so they can't buy twice in one turn (optional)
             shopbuttons[index].interactable = false;
             shopbuttons[index].GetComponentInChildren<TextMeshProUGUI>().text = "BOUGHT";
+
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySFX(AudioManager.Instance.clickSound);
         }
     }
     
@@ -212,5 +232,33 @@ public class ShopManager : MonoBehaviour
             }
             GameManager.Instance.ResumeFromShop();
         }
+    }
+
+    public void OnRerollClicked()
+    {
+        int cost = GetRerollCost();
+
+        // Check if player has enough money
+        if (UIManager.Instance.GetCredits() >= cost)
+        {
+            // 1. Pay the price
+            UIManager.Instance.SpendCredits(cost);
+
+            // 2. Generate new items
+            GenerateRandomShop();
+
+            Debug.Log("Shop Rerolled for " + cost);
+        }
+    }
+
+    private int GetRerollCost()
+    {
+        // Math: Cost starts at 50, increases by 10 every round
+        // Round 1 = 60, Round 5 = 100, Round 10 = 150
+        if (GameManager.Instance != null)
+        {
+            return baseRerollCost + (GameManager.Instance.roundNumber * 10);
+        }
+        return baseRerollCost;
     }
 }
