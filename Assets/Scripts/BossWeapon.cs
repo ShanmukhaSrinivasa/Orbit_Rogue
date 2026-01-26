@@ -44,7 +44,7 @@ public class BossWeapon : MonoBehaviour
                 ShootArcShot();
             }
             // Round 3-5: Intermediate (Nova + Arc)
-            else if (currentRound <= 5)
+            else if (currentRound <= 8)
             {
                 if (Random.value > 0.5f)
                 {
@@ -55,7 +55,7 @@ public class BossWeapon : MonoBehaviour
                     ShootArcShot();
                 }
             }
-            // Round 5+: Hard Mode (All Attacks mixed)
+            // Round 8+: Hard Mode (All Attacks mixed)
             else
             {
                 if (Random.value > 0.5f)

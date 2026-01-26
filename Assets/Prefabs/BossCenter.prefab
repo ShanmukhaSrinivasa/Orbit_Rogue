@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2831106461065999363}
   - component: {fileID: 5595291143895941632}
   - component: {fileID: 3171130628157466737}
+  - component: {fileID: 8806798689172799954}
   m_Layer: 0
   m_Name: BossCenter
   m_TagString: Boss
@@ -133,7 +134,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 10.08, y: 9.96}
+    oldSize: {x: 3.36, y: 3.32}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -155,7 +156,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BossHealth
   maxHealth: 10
   currentHealth: 0
-  deathEffectPrefab: {fileID: 8454371210053141505, guid: 8e2fed1e61a5794488780c18387c1f42, type: 3}
+  baseScore: 100
+  scoreIncreasePerRound: 50
+  deathEffectPrefab: {fileID: 660460218390438580, guid: 021da1413f612e24db11ac09140e582e, type: 3}
   flashColor: {r: 1, g: 0, b: 0, a: 1}
   flashDuration: 0.1
 --- !u!114 &3171130628157466737
@@ -177,6 +180,28 @@ MonoBehaviour:
   novaBulletCount: 8
   arcBulletCount: 5
   arcAngle: 60
+--- !u!95 &8806798689172799954
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2694576016636958313}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: cb28dbfdaf5f2ed49b30225926bec044, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6816541555298450468
 GameObject:
   m_ObjectHideFlags: 0
@@ -226,5 +251,4 @@ MonoBehaviour:
   warningDuration: 1
   rotationSpeed: 30
   isStatic: 0
-  sectorAngle: 45
   visualWedgePrefab: {fileID: 7142084235502976646, guid: 736313d0ec883e24da303a7415172b40, type: 3}

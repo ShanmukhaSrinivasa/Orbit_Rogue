@@ -79,6 +79,8 @@ public class BossHealth : MonoBehaviour
     {
         Debug.Log("Boss Defeated!");
 
+        ClearActiveThreats();
+
         CameraShake.Instance.Shake(0.5f, 0.5f);
         
         //Optional: Spawn explosion effect
@@ -99,7 +101,7 @@ public class BossHealth : MonoBehaviour
             int round = GameManager.Instance.roundNumber;
             int calculateScore = baseScore + (round * scoreIncreasePerRound);
 
-            UIManager.Instance.AddScore(calculateScore);
+            UIManager.Instance.AddCredits(calculateScore);
         }
 
         // Hide the bar since boss is dead
@@ -107,5 +109,15 @@ public class BossHealth : MonoBehaviour
 
         // Destroy Boss Object
         Destroy(gameObject);
+    }
+
+    public void ClearActiveThreats()
+    {
+        BossProjectile[] activeBullets = Object.FindObjectsByType<BossProjectile>(FindObjectsSortMode.None);
+
+        foreach (BossProjectile bullet in activeBullets)
+        {
+            Destroy(bullet.gameObject);
+        }
     }
 }

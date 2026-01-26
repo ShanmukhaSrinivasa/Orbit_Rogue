@@ -9,13 +9,13 @@ public class UIManager : MonoBehaviour
     [Header("Text Elements")]
     public TextMeshProUGUI healthText;
     public TextMeshProUGUI roundText;
-    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI creditsText;
 
     [Header("Boss UI")]
     public Slider bossHealthSlider;  // Drag your UI slider here
     public GameObject bossHealthPanel;      // Optional: To hide the bar between rounds
 
-    private int currentScore = 0;
+    private int currentCredits = 0;
 
     private void Awake()
     {
@@ -31,34 +31,34 @@ public class UIManager : MonoBehaviour
 
     public void UpdateHealth(int health)
     {
-        healthText.text = "Health: " + health;
+        healthText.text = "Health- " + health;
     }
 
     public void UpdateRound(int round)
     {
-        roundText.text = "Round: " + round;
+        roundText.text = "Round- " + round;
     }
 
-    public void AddScore(int points)
+    public void AddCredits(int points)
     {
-        currentScore += points;
-        scoreText.text = "Score: " + currentScore;
+        currentCredits += points;
+        creditsText.text = "Credits- " + currentCredits;
     }
 
-    public int GetScore()
+    public int GetCredits()
     {
-        return currentScore;
+        return currentCredits;
     }
 
-    public void SpendScore(int amount)
+    public void SpendCredits(int amount)
     {
-        currentScore -= amount;
-        UpdateScoreText();
+        currentCredits -= amount;
+        UpdateCreditsText();
     }
 
-    public void UpdateScoreText()
+    public void UpdateCreditsText()
     {
-        scoreText.text = "Score: " + currentScore;
+        creditsText.text = "Credits: " + currentCredits;
     }
 
     public void InitBossHealthBar(int maxHealth)

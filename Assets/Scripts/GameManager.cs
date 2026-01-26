@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -27,6 +28,10 @@ public class GameManager : MonoBehaviour
 
     [Header("Shop References")]
     public ShopManager shopManagerScript;
+
+    [Header("UI References")]
+    public TextMeshProUGUI currentRoundText;
+    public TextMeshProUGUI highScoreText;
 
     private void Awake()
     {
@@ -106,7 +111,29 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Game Over!");
         Time.timeScale = 0f; // Pause the game
+
+        int bestRound = PlayerPrefs.GetInt("BestRound", 0);
+
+        if (roundNumber > bestRound)
+        {
+            bestRound = roundNumber;
+            PlayerPrefs.SetInt("Bestound", bestRound);
+            PlayerPrefs.Save();
+        }
+
+        if (currentRoundText != null)
+        {
+            currentRoundText.text = "Rounds Survived: " + "\n" + roundNumber;
+        }
+
+        if (highScoreText != null)
+        {
+            highScoreText.text = "Best Record: \n" + bestRound + "</color>";
+        }
+
         ShowCG(gameOverPanel);
+
+
     }
 
     public void RestartGame()

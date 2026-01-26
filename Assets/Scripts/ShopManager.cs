@@ -27,6 +27,7 @@ public class UpgradeOption
     public int cost;
     public int costIncreasePerBuy;
     [TextArea] public string description;
+    public Sprite icon;
 }
 
 public class ShopManager : MonoBehaviour
@@ -45,6 +46,9 @@ public class ShopManager : MonoBehaviour
     public AutoShoot playerGun;
     public PlayerOrbit playerOrbit;
 
+    [Header("Stats UI")]
+    public PlayerStatsUI statsUI;
+
     // Internal list to track what is currently in the 3 slots
     private List<UpgradeOption> currentShopSelection = new List<UpgradeOption>();
 
@@ -52,7 +56,12 @@ public class ShopManager : MonoBehaviour
     {
         if (shopeScoreText != null)
         {
-            shopeScoreText.text = "Funds: " + UIManager.Instance.GetScore();
+            shopeScoreText.text = "Funds: " + UIManager.Instance.GetCredits();
+        }
+
+        if (statsUI != null)
+        {
+            statsUI.UpdateStats();
         }
     }
 
@@ -108,19 +117,40 @@ public class ShopManager : MonoBehaviour
         {
             texts[1].text = "Cost: " + upgrade.cost;
 
-            // Clear old listeners and add new one
-            btn.onClick.RemoveAllListeners();
-            btn.onClick.AddListener(() => BuyUpgrade(index));
         }
+
+        Transform iconTransform = btn.transform.Find("Icon");
+        if (iconTransform != null)
+        {
+            Image iconImg = iconTransform.GetComponent<Image>();
+            if (iconImg != null)
+            {
+                if (upgrade.icon != null)
+                {
+                    iconImg.sprite = upgrade.icon;
+                    iconImg.enabled = true;
+                }
+                else
+                {
+                    iconImg.enabled = false;
+                }
+            }
+        }
+
+        // Clear old listeners and add new one
+        btn.onClick.RemoveAllListeners();
+        btn.onClick.AddListener(() => BuyUpgrade(index));
+
+        btn.interactable = true;
     }
 
     public void BuyUpgrade(int index)
     {
         UpgradeOption upgrade = currentShopSelection[index];
 
-        if (UIManager.Instance.GetScore() >= upgrade.cost)
+        if (UIManager.Instance.GetCredits() >= upgrade.cost)
         {
-            UIManager.Instance.SpendScore(upgrade.cost);
+            UIManager.Instance.SpendCredits(upgrade.cost);
             ApplyUpgradeEffect(upgrade);
 
             // increase Cost (Influence)
