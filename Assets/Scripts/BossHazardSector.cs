@@ -23,7 +23,7 @@ public class BossHazardSector : MonoBehaviour
     {
         SpawnVisuals();
 
-        if (GameManager.Instance.roundNumber >= 5)
+        if (GameManager.Instance.roundNumber >= 6)
         {
             StartCoroutine(HazardCycle());
         }

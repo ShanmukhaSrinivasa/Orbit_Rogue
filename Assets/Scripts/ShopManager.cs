@@ -51,6 +51,7 @@ public class ShopManager : MonoBehaviour
 
     [Header("Reroll Settings")]
     public int baseRerollCost = 90;
+    public int rerollCostIncrease = 50;
     public TextMeshProUGUI rerollButtonText; // Drag the text inside the button here
     public Button rerollButton;
 
@@ -244,8 +245,16 @@ public class ShopManager : MonoBehaviour
             // 1. Pay the price
             UIManager.Instance.SpendCredits(cost);
 
-            // 2. Generate new items
+            // 2. Increase Reroll cost Immediately
+            baseRerollCost += rerollCostIncrease;
+
+            // 3. Generate new items
             GenerateRandomShop();
+
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(AudioManager.Instance.clickSound);
+            }
 
             Debug.Log("Shop Rerolled for " + cost);
         }

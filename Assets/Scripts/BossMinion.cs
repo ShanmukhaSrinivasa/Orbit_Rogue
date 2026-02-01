@@ -19,8 +19,6 @@ public class BossMinion : MonoBehaviour
         }
     }
 
-
-
     public void TakeDamage(int damage)
     {
         health -= damage;

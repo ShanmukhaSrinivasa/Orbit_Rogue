@@ -1,27 +1,28 @@
+using System.Collections;
 using UnityEngine;
 
 public class BossWeapon : MonoBehaviour
 {
     [Header("Settings")]
     public GameObject bulletPrefab;     // Drag BossBullet here
-    public int bulletCount = 8;         // Number of bullets to shoot in a circle
-    public float fireRate = 2f;        // Seconds between shots
+    public float baseFireRate = 2f;        // Seconds between shots
     public float bulletSpeed = 4f;
 
-    [Header("Bullet Pattern Settings")]
+    [Header("Nova Bullet Pattern Settings")]
     public int novaBulletCount = 8;   // Number of bullets in nova pattern
+    public int novaWaves = 3;
+    public float novaSpinSpeed = 10f;
+    private float cureentSpin = 0f;
 
     [Header("Arc/Half-Circle Pattern")]
     public int arcBulletCount = 5;
+    public int arcWaves = 2;
     public float arcAngle = 60f;      // Total angle of the arc
 
-    private float nextFireTime;
     private Transform playerTransform;
 
     void Start()
     {
-        // Don't shoot immediately on spawn, give player 1 second time to breathe
-        nextFireTime = Time.time + 1f;
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
 
@@ -29,72 +30,93 @@ public class BossWeapon : MonoBehaviour
         {
             playerTransform = player.transform;
         }
+
+        StartCoroutine(AttackLoop());
     }
 
-
-    void Update()
+    private IEnumerator AttackLoop()
     {
-        if (Time.time >= nextFireTime)
-        {
-            int currentRound = GameManager.Instance.roundNumber;
+        yield return new WaitForSeconds(1f);
 
-            // Round 1-3: Tutorial Phase (Only Arc Attack)
-            if (currentRound <= 3)
+        while (true)
+        {
+            int round = GameManager.Instance.roundNumber;
+
+            if (round <= 2)
             {
-                ShootArcShot();
+                yield return StartCoroutine(FireArcRoutine());
             }
-            // Round 3-5: Intermediate (Nova + Arc)
-            else if (currentRound <= 8)
+            else if(round <= 6)
             {
-                if (Random.value > 0.5f)
+                if (Random.value > 0.5)
                 {
-                    ShootNova();
+                    yield return StartCoroutine(FireNovaRoutine());
                 }
                 else
                 {
-                    ShootArcShot();
+                    yield return StartCoroutine(FireArcRoutine());
                 }
             }
-            // Round 8+: Hard Mode (All Attacks mixed)
             else
             {
-                ShootArcShot();
-                ShootNova();
+                yield return StartCoroutine(FireNovaRoutine());
+
+                yield return new WaitForSeconds(0.5f);
+
+                yield return StartCoroutine(FireArcRoutine());
             }
-            nextFireTime = Time.time + fireRate;
+
+            float cooldown = Mathf.Max(0.5f, baseFireRate - (round * 0.1f));
+            yield return new WaitForSeconds(cooldown);
         }
     }
 
-    private void ShootNova()
+    private IEnumerator FireNovaRoutine()
     {
-        float angleStep = 360f / novaBulletCount;
-        for (int i = 0; i < novaBulletCount; i++)
+        for (int w = 0; w < novaWaves; w++)
         {
-            SpawnBullet(i * angleStep);
+            float angleStep = 360f / novaBulletCount;
+            cureentSpin += novaSpinSpeed;
+
+            for (int i = 0; i < novaBulletCount; i++)
+            {
+                float angle = (i * angleStep) + cureentSpin;
+                SpawnBullet(angle);
+            }
+
+            yield return new WaitForSeconds(0.2f);
         }
     }
 
-    private void ShootArcShot()
+    private IEnumerator FireArcRoutine()
     {
-        if(playerTransform == null)
+        if (playerTransform == null)
         {
-            return;
+            yield break;
         }
 
-        // 1. Find direction to player
-        Vector3 directionToPlayer = playerTransform.position - transform.position;
-        float centreAngle = Mathf.Atan2(directionToPlayer.y, directionToPlayer.x) * Mathf.Rad2Deg - 90f;
-
-        // 2. Spawn Bullets in an arc centered on the player
-        float StartAngle = centreAngle - (arcAngle / 2f);
-        float angleStep = arcAngle / (arcBulletCount - 1);
-
-        for(int i=0; i < arcBulletCount; i++)
+        for(int w = 0; w < arcWaves; w++)
         {
-            float bulletAngle = StartAngle + (i * angleStep);
-            SpawnBullet(bulletAngle);
+            if (playerTransform == null)
+            {
+                break;
+            }
+
+            Vector3 directionToPlayer = playerTransform.position - transform.position;
+            float centreAngle = Mathf.Atan2(directionToPlayer.y, directionToPlayer.x) * Mathf.Rad2Deg - 90f;
+            float StartAngle = centreAngle - (arcAngle / 2f);
+            float angleStep = arcAngle / (arcBulletCount - 1);
+
+            for (int i = 0; i < arcBulletCount; i++)
+            {
+                float bulletAngle = StartAngle + (i * angleStep);
+                SpawnBullet(bulletAngle);
+            }
+
+            yield return new WaitForSeconds(0.3f);
         }
     }
+
 
     private void SpawnBullet(float angle)
     {

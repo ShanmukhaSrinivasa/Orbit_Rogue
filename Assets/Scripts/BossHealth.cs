@@ -46,13 +46,26 @@ public class BossHealth : MonoBehaviour
         // --- NEW SCALING LOGIC ---
         int round = GameManager.Instance.roundNumber;
 
+        if (round < 4)
+        {
+            minionCount = 0;
+        }
+        else
+        {
+            int extraMinions = (round - 4);
+            minionCount = 2 + extraMinions;
+
+            if (minionCount > 6)
+            {
+                minionCount = 6;
+            }
+        }
+
+
         // 1. Calculate how many "Scale Steps" we have passed (e.g., Round 5 = 1 step, Round 10 = 2 steps)
         int scaleSteps = round / 5;
 
-        // 2. Increase Count: Add 1 minion every 5 rounds
-        minionCount = baseMinionCount + scaleSteps;
-
-        // 3. Increase Health: Add 3 HP every 5 rounds (Keeps them tough)
+        // 2. Increase Health: Add 3 HP every 5 rounds (Keeps them tough)
         calculatedMinionHealth = baseMinionHealth + (scaleSteps * 3);
 
         SpawnMinions();
